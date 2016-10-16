@@ -18,6 +18,7 @@ class core {
     getElementMaker(elementName) {
         var makeElement = this._elementMap.filter((o) => {
             if (elementName) {
+                console.log(elementName);
                 return o.element.toLowerCase() === elementName.toLowerCase();
             }
             [0];
@@ -29,16 +30,47 @@ class core {
         return makeElement[0].makeFunction;
     }
     createElement(element) {
-        var makeElement = this.getElementMaker(element.element);
         let result;
-        result = makeElement(element);
-        if (element.parentElement && typeof element.parentElement === 'object') {
-            console.log(element.parentElement);
-            let parent = this.createElement(element.parentElement);
-            parent.appendChild(result);
-            result = parent;
-        }
+        result = this.evalHierarchicalElements(element, null);
         return result;
+    }
+    evalHierarchicalElements(element, currentHTMLElement) {
+        var nElement = this.varToElement(element);
+        if (currentHTMLElement) {
+            if (!nElement || !this.isHTMLElement(nElement)) {
+                return currentHTMLElement;
+            }
+            nElement.appendChild(currentHTMLElement);
+        }
+        if (element.parentElement) {
+            currentHTMLElement = this.evalHierarchicalElements(element.parentElement, nElement);
+        }
+        else {
+            currentHTMLElement = nElement;
+        }
+        if (!currentHTMLElement) {
+            return nElement;
+        }
+        return currentHTMLElement;
+    }
+    varToElement(element) {
+        if (this.isHTMLElement(element)) {
+            return element;
+        }
+        if (element && typeof element === 'object') {
+            var makeElement = this.getElementMaker(element.element);
+            element = makeElement(element);
+        }
+        if (element && typeof element === 'string') {
+            let e = document.getElementById(element);
+            if (!e) {
+                console.warn("element with ID:'", element, "'could not be found, i will create a div element and append it to the document body");
+                var d = document.createElement('div');
+                d.innerHTML = element;
+                document.getElementsByTagName('body')[0].appendChild(d);
+            }
+        }
+        return element;
     }
     init() {
         this._pages.forEach((page) => console.log("page:", page.pageName, page.configuration));
@@ -86,9 +118,12 @@ class core {
             }
         });
     }
+    isHTMLElement(element) {
+        return element && element instanceof HTMLElement;
+    }
 }
 core._excludedAttributes = [
-    'includelabel',
+    'includeLabel',
     'label',
     'element',
     'parentElement'

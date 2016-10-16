@@ -21,6 +21,8 @@ declare class core {
     private initElementMap();
     getElementMaker(elementName: string): Function;
     createElement(element: any): HTMLElement;
+    private evalHierarchicalElements(element, currentHTMLElement);
+    private varToElement(element);
     init(): void;
     processPageTemplate(template: page, fctn: Function): void;
     static makeSelect(attributes: any): HTMLSelectElement;
@@ -28,5 +30,6 @@ declare class core {
     static makeText(attributes: any): HTMLInputElement;
     private static excludeAttribute(element);
     private static attributeHelper(element, attributes);
+    private isHTMLElement(element);
 }
 declare var t: core;

@@ -6,7 +6,7 @@ var pages =
             postData: "",
             template: [{
                 "id": "isperson",
-                "includelabel":false
+                "includeLabel":false
             },
             {
                 "id": "first_name",
@@ -14,19 +14,24 @@ var pages =
                 "element":"text",
                 "parentElement":{ // object or id (string) of parent element ?
                     "id":"firstnamediv",
-                    "element":"div"
+                    "element":"div",
+                    "parentElement":{
+                       "id": "parentparentdiv",
+                       "element":"div"
+                    }
                 },
                 "data-validation": "required", // or regex
                 "data-dependson":[{"isperson":true}],
-                "includelabel": true
+                "includeLabel": true
             },
             {
                 "id": "surname",
                 "element":"select",
                 "parentElement":"body",
+                "childElement":"",
                 "data-validation": "required", // or regex
                 "data-dependson": [{"isperson":true}],
-                "includelabel": true
+                "includeLabel": true
         }
             ]
         }
